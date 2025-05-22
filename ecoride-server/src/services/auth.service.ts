@@ -45,7 +45,10 @@ export const register = async (data: RegisterData): Promise<AuthResponse> => {
     
     return { token, user };
   } catch (error) {
-    throw error.response?.data?.message || 'Erreur lors de l\'inscription';
+    if (axios.isAxiosError(error)) {
+        throw error.response?.data?.message || 'Erreur lors de l\'inscription';
+    }
+    throw 'Erreur lors de l\'inscription';
   }
 };
 
@@ -58,7 +61,10 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
     
     return { token, user };
   } catch (error) {
-    throw error.response?.data?.message || 'Erreur lors de la connexion';
+    if (axios.isAxiosError(error)) {
+        throw error.response?.data?.message || 'Erreur lors de la connexion';
+    }
+    throw 'Erreur lors de la connexion';
   }
 };
 
@@ -78,8 +84,12 @@ export const getProfile = async () => {
     const response = await axios.get(`${API_URL}/auth/profile`);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || 'Erreur lors de la récupération du profil';
+    if (axios.isAxiosError(error)) {
+        throw error.response?.data?.message || 'Erreur lors de la récupération du profil';
+    }
+    throw 'Erreur lors de la récupération du profil';
   }
+  
 };
 
 export const isAuthenticated = (): boolean => {
