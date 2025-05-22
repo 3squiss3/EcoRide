@@ -11,7 +11,8 @@ const mockRides: Ride[] = [
     driver: {
       username: 'Martin',
       photo: 'https://randomuser.me/api/portraits/men/1.jpg',
-      rating: 4.5
+      rating: 4.5,
+      id: 0
     },
     availableSeats: 3,
     price: 15,
@@ -28,7 +29,8 @@ const mockRides: Ride[] = [
     driver: {
       username: 'Sophie',
       photo: 'https://randomuser.me/api/portraits/women/1.jpg',
-      rating: 5
+      rating: 5,
+      id: 0
     },
     availableSeats: 2,
     price: 12,
@@ -45,7 +47,8 @@ const mockRides: Ride[] = [
     driver: {
       username: 'Alex',
       photo: 'https://randomuser.me/api/portraits/men/2.jpg',
-      rating: 3.8
+      rating: 3.8,
+      id: 0
     },
     availableSeats: 1,
     price: 18,

@@ -2,9 +2,58 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import type { Review, RideDetail } from '../types';
 
-const mockRideDetails = {
+// Définition des types locaux pour éviter les erreurs d'import
+interface Review {
+  id: number;
+  author: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
+interface Driver {
+  id: number;
+  username: string;
+  photo: string;
+  rating: number;
+  reviews: Review[];
+}
+
+interface Vehicle {
+  brand: string;
+  model: string;
+  color: string;
+  energy: string;
+  year: number;
+}
+
+interface Preferences {
+  smoking: boolean;
+  animals: boolean;
+  music: string;
+  conversation: string;
+}
+
+interface RideDetail {
+  id: number;
+  driver: Driver;
+  availableSeats: number;
+  price: number;
+  departureCity: string;
+  departureAddress: string;
+  arrivalCity: string;
+  arrivalAddress: string;
+  departureDate: string;
+  departureTime: string;
+  arrivalTime: string;
+  isEcological: boolean;
+  durationMinutes: number;
+  vehicle: Vehicle;
+  preferences: Preferences;
+}
+
+const mockRideDetails: RideDetail = {
   id: 1,
   driver: {
     id: 101,
@@ -236,9 +285,9 @@ const RideDetailPage = () => {
               </div>
 
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Avis sur le conducteur</h2>
-              {(ride.driver.reviews as Review[]).length > 0 ? (
+              {ride.driver.reviews && ride.driver.reviews.length > 0 ? (
                 <div className="space-y-4">
-                  {ride.driver.reviews?.map(review => (
+                  {ride.driver.reviews.map((review: Review) => (
                     <div key={review.id} className="bg-gray-50 p-4 rounded-lg">
                       <div className="flex justify-between items-center mb-2">
                         <h3 className="font-medium text-gray-900">{review.author}</h3>
@@ -309,9 +358,7 @@ const RideDetailPage = () => {
               </button>
               <button
                 onClick={() => {
-                  // Dans un cas réel, on enverrait une requête à l'API
-                  // Puis on redirigerait l'utilisateur
-                  window.location.href = '/connexion'; // Redirection vers la page de connexion si l'utilisateur n'est pas connecté
+                  window.location.href = '/connexion';
                 }}
                 className="px-4 py-2 bg-eco-green-600 text-white rounded-md hover:bg-eco-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-eco-green-500 transition"
               >

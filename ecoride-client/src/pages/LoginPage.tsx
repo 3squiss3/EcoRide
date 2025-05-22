@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -14,15 +14,14 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Récupérer le message de succès de la création de compte (si applicable)
   const message = location.state?.message || '';
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setCredentials(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -31,11 +30,7 @@ const LoginPage = () => {
       await login(credentials.email, credentials.password);
       navigate('/mon-espace');
     } catch (err) {
-      if (err instanceof Error) {
-            setError(err.message);
-        } else {
-            setError('Une erreur est survenue lors de la connexion');
-        }
+      setError(typeof err === 'string' ? err : 'Une erreur est survenue lors de la connexion');
     } finally {
       setLoading(false);
     }
@@ -65,7 +60,7 @@ const LoginPage = () => {
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="label">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Adresse email
             </label>
             <input
@@ -76,22 +71,16 @@ const LoginPage = () => {
               required
               value={credentials.email}
               onChange={handleChange}
-              className="input"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-eco-green-500 focus:border-eco-green-500"
               placeholder="votre@email.com"
             />
           </div>
           
           <div>
             <div className="flex items-center justify-between">
-              <label htmlFor="password" className="label">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Mot de passe
               </label>
-              <Link
-                to="/mot-de-passe-oublie"
-                className="text-sm text-eco-green-600 hover:text-eco-green-500"
-              >
-                Mot de passe oublié ?
-              </Link>
             </div>
             <input
               id="password"
@@ -101,7 +90,7 @@ const LoginPage = () => {
               required
               value={credentials.password}
               onChange={handleChange}
-              className="input"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-eco-green-500 focus:border-eco-green-500"
             />
           </div>
           
@@ -109,7 +98,9 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full btn btn-primary ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-eco-green-600 hover:bg-eco-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-eco-green-500 transition ${
+                loading ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
               {loading ? 'Connexion en cours...' : 'Se connecter'}
             </button>

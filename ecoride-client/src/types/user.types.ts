@@ -9,7 +9,7 @@ export interface User {
   id: number;
   username: string;
   email: string;
-  password?: string; // Optional in frontend contexts
+  password?: string;
   credits: number;
   isDriver: boolean;
   isPassenger: boolean;
