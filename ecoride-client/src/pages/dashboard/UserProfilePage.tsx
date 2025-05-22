@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import axios, { AxiosError } from 'axios';
-
-const API_URL = 'http://localhost:5000/api';
+import { AxiosError } from 'axios';
 
 const UserProfilePage = () => {
   const { user } = useAuth();

@@ -13,7 +13,7 @@ const UserDashboardPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState('profile');
+  const [_activeTab, setActiveTab] = useState('profile');
 
   useEffect(() => {
     // Déterminer l'onglet actif en fonction de l'URL

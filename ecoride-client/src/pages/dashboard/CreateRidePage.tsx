@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useState } from 'react';
 
 // Données fictives pour simulation
 const mockVehicles = [
@@ -28,8 +27,7 @@ const mockVehicles = [
 ];
 
 const CreateRidePage = () => {
-  const { user } = useAuth();
-  const [vehicles, setVehicles] = useState(mockVehicles);
+  const [vehicles, _setVehicles] = useState(mockVehicles);  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');

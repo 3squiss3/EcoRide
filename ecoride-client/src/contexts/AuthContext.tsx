@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import * as authService from '../services/auth.service.ts';
-import type { User } from '../types';
+import type { User, UserRole } from '../types';
 import type { AuthContextType } from '../types/auth.types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,7 +35,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setLoading(true);
     try {
       const { user } = await authService.login({ email, password });
-      setUser(user);
+      setUser({
+        ...user,
+        role: user.role as UserRole
+      });
       setIsAuthenticated(true);
     } catch (error) {
       throw error;
@@ -48,7 +51,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setLoading(true);
     try {
       const { user } = await authService.register({ username, email, password });
-      setUser(user);
+      setUser({
+        ...user,
+        role: user.role as UserRole
+      });
       setIsAuthenticated(true);
     } catch (error) {
       throw error;

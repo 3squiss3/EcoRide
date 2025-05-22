@@ -1,10 +1,41 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
+// Types personnalisés pour les données de l'historique
+interface MockVehicle {
+  brand: string;
+  model: string;
+}
+
+interface MockUser {
+  id: number;
+  username: string;
+  photo: string;
+}
+
+interface MockDriver extends MockUser {
+  vehicle: MockVehicle;
+}
+
+interface MockRide {
+  id: number;
+  type: 'driver' | 'passenger';
+  departureCity: string;
+  arrivalCity: string;
+  departureDate: string;
+  departureTime: string;
+  arrivalTime: string;
+  status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+  price: number;
+  passengersCount?: number;
+  vehicle?: MockVehicle;
+  passengers?: MockUser[];
+  driver?: MockDriver;
+}
+
 // Données fictives pour simulation
-const mockRides = [
+const mockRides: MockRide[] = [
   {
     id: 1,
     type: 'driver',
@@ -66,14 +97,13 @@ const mockRides = [
 ];
 
 const UserRidesHistoryPage = () => {
-  const { user } = useAuth();
-  const [rides, setRides] = useState(mockRides);
-  const [filter, setFilter] = useState('all');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const [rideToCancel, setRideToCancel] = useState(null);
+  const [rides, setRides] = useState<MockRide[]>(mockRides);
+  const [filter, setFilter] = useState<string>('all');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
+  const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
+  const [rideToCancel, setRideToCancel] = useState<MockRide | null>(null);
   
   const filteredRides = rides.filter(ride => {
     if (filter === 'all') return true;
@@ -84,16 +114,18 @@ const UserRidesHistoryPage = () => {
     return true;
   });
   
-  const handleFilterChange = (e) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilter(e.target.value);
   };
   
-  const handleCancelRide = (ride) => {
+  const handleCancelRide = (ride: MockRide) => {
     setRideToCancel(ride);
     setShowCancelModal(true);
   };
   
   const confirmCancelRide = () => {
+    if (!rideToCancel) return;
+    
     setLoading(true);
     setError('');
     setSuccess('');
@@ -101,7 +133,7 @@ const UserRidesHistoryPage = () => {
     // Simuler une requête API
     setTimeout(() => {
       // Mettre à jour le statut du covoiturage
-      setRides(rides.map(r => r.id === rideToCancel.id ? { ...r, status: 'CANCELLED' } : r));
+      setRides(rides.map(r => r.id === rideToCancel.id ? { ...r, status: 'CANCELLED' as const } : r));
       setSuccess('Le covoiturage a été annulé avec succès.');
       setShowCancelModal(false);
       setRideToCancel(null);
@@ -109,12 +141,12 @@ const UserRidesHistoryPage = () => {
     }, 1000);
   };
   
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return format(date, 'EEEE d MMMM yyyy', { locale: fr });
   };
   
-  const getStatusLabel = (status) => {
+  const getStatusLabel = (status: MockRide['status']) => {
     switch(status) {
       case 'PENDING': return { text: 'En attente', color: 'bg-yellow-100 text-yellow-800' };
       case 'CONFIRMED': return { text: 'Confirmé', color: 'bg-blue-100 text-blue-800' };
@@ -122,6 +154,16 @@ const UserRidesHistoryPage = () => {
       case 'CANCELLED': return { text: 'Annulé', color: 'bg-red-100 text-red-800' };
       default: return { text: 'Inconnu', color: 'bg-gray-100 text-gray-800' };
     }
+  };
+
+  const handleStartRide = (rideId: number) => {
+    // Logique pour démarrer un covoiturage
+    console.log('Démarrer le covoiturage', rideId);
+  };
+
+  const handleConfirmRide = (rideId: number) => {
+    // Logique pour confirmer un covoiturage
+    console.log('Confirmer le covoiturage', rideId);
   };
   
   return (
@@ -196,7 +238,7 @@ const UserRidesHistoryPage = () => {
                       <p className="text-lg font-bold text-eco-green-600">{ride.price} €</p>
                       {ride.type === 'driver' && (
                         <p className="text-sm text-gray-500">
-                          {ride.passengersCount} {ride.passengersCount > 1 ? 'passagers' : 'passager'}
+                          {ride.passengersCount} {(ride.passengersCount || 0) > 1 ? 'passagers' : 'passager'}
                         </p>
                       )}
                     </div>
@@ -205,11 +247,13 @@ const UserRidesHistoryPage = () => {
                   <div className="mt-4 border-t border-gray-200 pt-4">
                     {ride.type === 'driver' ? (
                       <div>
-                        <p className="text-sm text-gray-700 mb-2">
-                          Véhicule : {ride.vehicle.brand} {ride.vehicle.model}
-                        </p>
+                        {ride.vehicle && (
+                          <p className="text-sm text-gray-700 mb-2">
+                            Véhicule : {ride.vehicle.brand} {ride.vehicle.model}
+                          </p>
+                        )}
                         
-                        {ride.passengers.length > 0 && (
+                        {ride.passengers && ride.passengers.length > 0 && (
                           <div>
                             <p className="text-sm text-gray-700 mb-1">Passagers :</p>
                             <div className="flex -space-x-2 overflow-hidden">
@@ -228,17 +272,21 @@ const UserRidesHistoryPage = () => {
                       </div>
                     ) : (
                       <div>
-                        <p className="text-sm text-gray-700 mb-2">
-                          Conducteur : {ride.driver.username}
-                        </p>
-                        <p className="text-sm text-gray-700">
-                          Véhicule : {ride.driver.vehicle.brand} {ride.driver.vehicle.model}
-                        </p>
+                        {ride.driver && (
+                          <>
+                            <p className="text-sm text-gray-700 mb-2">
+                              Conducteur : {ride.driver.username}
+                            </p>
+                            <p className="text-sm text-gray-700">
+                              Véhicule : {ride.driver.vehicle.brand} {ride.driver.vehicle.model}
+                            </p>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
                   
-                  <div className="mt-4 flex justify-end">
+                  <div className="mt-4 flex justify-end space-x-2">
                     {['PENDING', 'CONFIRMED'].includes(ride.status) && (
                       <button
                         onClick={() => handleCancelRide(ride)}
@@ -250,15 +298,17 @@ const UserRidesHistoryPage = () => {
                     
                     {ride.status === 'CONFIRMED' && ride.type === 'driver' && (
                       <button
-                        className="btn btn-primary ml-2"
+                        onClick={() => handleStartRide(ride.id)}
+                        className="btn btn-primary"
                       >
                         Démarrer
                       </button>
                     )}
                     
-                    {ride.status === 'PENDING' && ride.type === 'driver' && ride.passengersCount > 0 && (
+                    {ride.status === 'PENDING' && ride.type === 'driver' && (ride.passengersCount || 0) > 0 && (
                       <button
-                        className="btn btn-primary ml-2"
+                        onClick={() => handleConfirmRide(ride.id)}
+                        className="btn btn-primary"
                       >
                         Confirmer
                       </button>
@@ -272,14 +322,14 @@ const UserRidesHistoryPage = () => {
       )}
       
       {/* Modal d'annulation */}
-      {showCancelModal && (
+      {showCancelModal && rideToCancel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
             <h2 className="text-lg font-bold mb-4">Confirmer l'annulation</h2>
             
             <p className="mb-4">
               Êtes-vous sûr de vouloir annuler ce covoiturage ?
-              {rideToCancel.type === 'driver' && rideToCancel.passengersCount > 0 && (
+              {rideToCancel.type === 'driver' && (rideToCancel.passengersCount || 0) > 0 && (
                 <span className="block mt-2 text-red-600">
                   Attention : Des passagers sont inscrits à ce covoiturage. Ils seront notifiés de l'annulation.
                 </span>

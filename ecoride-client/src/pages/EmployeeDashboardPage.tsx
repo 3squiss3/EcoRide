@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 import EmployeeReviewsPage from './employee/EmployeeReviewsPage';
@@ -8,7 +7,6 @@ import EmployeeIssuesPage from './employee/EmployeeIssuesPage';
 const EmployeeDashboardPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   
   const handleLogout = () => {
     logout();

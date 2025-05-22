@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useState } from 'react';
 import type { Vehicle } from '../../types';
 
 type VehicleFormData = Omit<Vehicle, 'id' | 'driverProfileId'>;
 
-// Données fictives pour simulation
 const mockVehicles: Vehicle[] = [
   {
     id: 1,
@@ -33,7 +31,6 @@ const mockVehicles: Vehicle[] = [
 ];
 
 const UserVehiclesPage = () => {
-  const { user } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>(mockVehicles);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);

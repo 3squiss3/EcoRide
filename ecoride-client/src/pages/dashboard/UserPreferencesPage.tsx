@@ -1,11 +1,6 @@
-// src/pages/dashboard/UserPreferencesPage.tsx
 import { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
 
 const UserPreferencesPage = () => {
-  const { user } = useAuth();
-  
-  // Données fictives pour simulation
   const [preferences, setPreferences] = useState({
     smoking: false,
     animals: true,
